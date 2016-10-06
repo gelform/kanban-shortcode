@@ -6,8 +6,8 @@ Plugin URI:			https://kanbanwp.com/addons/shortcodes/
 Description:		Embed your Kanban board on another page, or display a filtered to-do list.
 Requires at least:	4.0
 Tested up to:		4.6.1
-Version:			1.0.0
-Release Date:		September 27, 2018
+Version:			0.0.1
+Release Date:		October 6, 2018
 Author:				Gelform Inc
 Author URI:			http://gelwp.com
 License:			GPLv2 or later
@@ -45,6 +45,13 @@ class Kanban_Shortcodes
 
 
 	static function init() {
+
+		register_activation_hook( __FILE__, array( __CLASS__, 'check_for_core' ) );
+
+		add_action( 'admin_init', array( __CLASS__, 'check_for_core' ) );
+
+
+
 		// Build list of views
 		$methods = get_class_methods( __CLASS__ );
 
@@ -99,7 +106,7 @@ class Kanban_Shortcodes
 
 		// Get all boards, by id.
 		$boards = Kanban_Board::get_all();
-		$boards_in_order = Kanban_Utils::order_array_of_objects_by_property($boards, 'position', 'int');
+		$boards_in_order = Kanban_Utils::order_array_of_objects_by_property( $boards, 'position', 'int' );
 
 
 
@@ -114,19 +121,19 @@ class Kanban_Shortcodes
 		foreach ( $tasks as $task ) {
 
 			// Filter our tasks
-			if ( !is_null($atts['user']) && $task->user_id_assigned != $atts['user'] ) {
+			if ( !is_null( $atts[ 'user' ] ) && $task->user_id_assigned != $atts[ 'user' ] ) {
 				continue;
 			}
 
-			if ( !is_null($atts['board']) && $task->board_id != $atts['board'] ) {
+			if ( !is_null( $atts[ 'board' ] ) && $task->board_id != $atts[ 'board' ] ) {
 				continue;
 			}
 
-			if ( !is_null($atts['status']) && $task->status_id != $atts['status'] ) {
+			if ( !is_null( $atts[ 'status' ] ) && $task->status_id != $atts[ 'status' ] ) {
 				continue;
 			}
 
-			if ( !is_null($atts['project']) && $task->project_id != $atts['project'] ) {
+			if ( !is_null( $atts[ 'project' ] ) && $task->project_id != $atts[ 'project' ] ) {
 				continue;
 			}
 
@@ -151,7 +158,7 @@ class Kanban_Shortcodes
 			$boards[ $task->board_id ]->statuses[ $task->status_id ]->tasks[] = $task;
 
 			// Add a task count to each board.
-			if ( !isset($boards[ $task->board_id ]->task_count) ) {
+			if ( !isset( $boards[ $task->board_id ]->task_count ) ) {
 				$boards[ $task->board_id ]->task_count = 0;
 			}
 
@@ -192,7 +199,7 @@ class Kanban_Shortcodes
 
 
 
-		$func = 'render_list_order_by_' . $atts['order'];
+		$func = 'render_list_order_by_' . $atts[ 'order' ];
 
 		if ( !method_exists( __CLASS__, $func ) ) {
 			return;
@@ -206,7 +213,10 @@ class Kanban_Shortcodes
 	static function render_board( $atts ) {
 
 		$defaults = array(
-			'id' => NULL
+			'id' => NULL,
+			'css' => NULL,
+			'width' => '100%',
+			'height' => '400px'
 		);
 
 		$atts = shortcode_atts( $defaults, $atts );
@@ -231,8 +241,61 @@ class Kanban_Shortcodes
 
 
 
+	static function check_for_core() {
+		if ( !self::_is_parent_loaded() ) {
+			deactivate_plugins( plugin_basename( __FILE__ ) );
+
+			wp_die(
+				__(
+					'<p>
+						Whoops! This plugin requires the Kanban for WordPress plugin.
+	            		Please download it here: <a href="https://wordpress.org/plugins/kanban/" target="_blank">https://wordpress.org/plugins/kanban/</a>.</p>
+	            	<p>',
+					'kanban'
+				),
+				__( 'Error', 'kanban' ),
+				array( 'back_link' => TRUE )
+			);
+		}
+	}
+
+
+
+	static function _is_parent_loaded() {
+		return class_exists( 'Kanban' );
+	}
+
+
+
+	static function _is_parent_activated() {
+		$active_plugins_basenames = get_option( 'active_plugins' );
+		foreach ( $active_plugins_basenames as $plugin_basename ) {
+			if ( false !== strpos( $plugin_basename, '/kanban.php' ) ) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+
 }
 
 
 
-Kanban_Shortcodes::init();
+function kanban_shortcodes_addon() {
+	Kanban_Shortcodes::init();
+}
+
+
+
+if ( Kanban_Shortcodes::_is_parent_loaded() ) {
+	// If parent plugin already included, init add-on.
+	kanban_shortcodes_addon();
+} else if ( Kanban_Shortcodes::_is_parent_activated() ) {
+	// Init add-on only after the parent plugins is loaded.
+	add_action( 'kanban_loaded', 'kanban_shortcodes_addon' );
+} else {
+	// Even though the parent plugin is not activated, execute add-on for activation / uninstall hooks.
+	kanban_shortcodes_addon();
+}

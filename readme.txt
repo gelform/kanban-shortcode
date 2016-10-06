@@ -1,12 +1,13 @@
-=== Plugin Name ===
+=== Kanban: Shortcodes ===
 Contributors:		gelform
 Plugin Name:		Kanban: Shortcodes
 Plugin URI:			https://kanbanwp.com/addons/shortcodes/
 Description:		Embed your Kanban board on another page, or display a filtered to-do list.
 Requires at least:	4.0
 Tested up to:		4.6.1
-Version:			1.0.0
-Release Date:		September 27, 2018
+Version:			0.0.1
+Release Date:		October 6, 2018
+Stable tag:         trunk
 Author:				Gelform Inc
 Author URI:			http://gelwp.com
 License:			GPLv2 or later
@@ -29,5 +30,39 @@ This is an add-on plugn for [Kanban for WordPress](https://KanbanWP.com). Embed 
 1. Activate the plugin through the 'Plugins' screen in WordPress
 1. Add the shortcode `[kanban]` to any page where you would like the Kanban board to appear. An iframe is added to the page, displaying your board.
 
+There are a few options for configuring the iFrame.
 
+`[kanban css="..."]`
 
+Use this option to add your own css. If you do not include it, the default css will be used.
+
+All boards have a class of `.kanban-iframe`.
+
+The default css is:
+`
+.kanban-iframe {
+    border: 1px solid black;
+    height: 400px;
+    width: 100%;
+}
+`
+
+`[kanban height="400px"]`
+
+Use this option to set the height of the iFrame. The default is `400px`. This will only be used if the "css" option is not used.
+
+`[kanban width="100%"]`
+
+Use this option to set the width of the iFrame. The default is `100%`. This will only be used if the "css" option is not used.
+
+`[kanban id="1"]`
+
+Use this option to specify which board to default to. This requires the Multiple Board paid add-on.
+
+== Frequently Asked Questions ==
+
+None yet. Email your questions here: https://kanbanwp.com/contact-us/
+
+== Changelog ==
+
+For the changelog, please visit [https://kanbanwp.com/addons/shortcodes/](https://kanbanwp.com/addons/shortcodes/)
