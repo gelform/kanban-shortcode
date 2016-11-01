@@ -66,3 +66,8 @@ None yet. Email your questions here: https://kanbanwp.com/contact-us/
 == Changelog ==
 
 For the changelog, please visit [https://kanbanwp.com/addons/shortcodes/](https://kanbanwp.com/addons/shortcodes/)
+
+== Screenshots ==
+
+1. Just add the chortcode `[kanban]` in the visual editor.
+2. Your board rendered when you view the page.
