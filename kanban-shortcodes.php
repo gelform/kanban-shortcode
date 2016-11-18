@@ -67,7 +67,7 @@ class Kanban_Shortcodes
 
 
 
-	static function shortcode_parser( $atts ) {
+	static function shortcode_parser( $atts = array() ) {
 
 		$view = 'board';
 
