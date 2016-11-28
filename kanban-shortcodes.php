@@ -6,8 +6,8 @@ Plugin URI:			https://kanbanwp.com/addons/shortcodes/
 Description:		Embed your Kanban board on another page, or display a filtered to-do list.
 Requires at least:	4.0
 Tested up to:		4.6.1
-Version:			0.0.1
-Release Date:		October 6, 2018
+Version:			0.0.2
+Release Date:		November 28, 2018
 Author:				Gelform Inc
 Author URI:			http://gelwp.com
 License:			GPLv2 or later
@@ -71,15 +71,23 @@ class Kanban_Shortcodes
 
 		$view = 'board';
 
-		foreach ( $atts as $key => $val ) {
-			if ( is_numeric( $key ) ) {
-				if ( in_array( $val, self::$views ) ) {
-					$view = $val;
-					break;
+		// View is passed as val with int key e.g. [kanban board]
+		if ( is_array($atts) ) {
+			foreach ( $atts as $key => $val ) {
+
+				// If the key is 0, 1, etc.
+				if ( is_numeric( $key ) ) {
+
+					// And in the views, then it must be the view.
+					if ( in_array( $val, self::$views ) ) {
+						$view = $val;
+						break;
+					}
 				}
 			}
 		}
 
+		// Determine which method to use.
 		$func = 'render_' . $view;
 
 		if ( !method_exists( __CLASS__, $func ) ) {

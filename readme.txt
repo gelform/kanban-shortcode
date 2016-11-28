@@ -5,8 +5,8 @@ Plugin URI:			https://kanbanwp.com/addons/shortcodes/
 Description:		Embed your Kanban board on another page, or display a filtered to-do list.
 Requires at least:	4.0
 Tested up to:		4.6.1
-Version:			0.0.1
-Release Date:		October 6, 2018
+Version:			0.0.2
+Release Date:		November 28, 2018
 Stable tag:         trunk
 Author:				Gelform Inc
 Author URI:			http://gelwp.com
