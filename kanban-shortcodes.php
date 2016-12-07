@@ -6,8 +6,8 @@ Plugin URI:			https://kanbanwp.com/addons/shortcodes/
 Description:		Embed your Kanban board on another page, or display a filtered to-do list.
 Requires at least:	4.0
 Tested up to:		4.6.1
-Version:			0.0.2
-Release Date:		November 28, 2018
+Version:			0.0.3
+Release Date:		December 7, 2018
 Author:				Gelform Inc
 Author URI:			http://gelwp.com
 License:			GPLv2 or later
@@ -34,12 +34,13 @@ Domain Path: 		/languages/
 
 
 // Exit if accessed directly
-if ( !defined( 'ABSPATH' ) ) exit;
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
 
 
-class Kanban_Shortcodes
-{
+class Kanban_Shortcodes {
 	static $views = array();
 
 
@@ -56,7 +57,7 @@ class Kanban_Shortcodes
 		$methods = get_class_methods( __CLASS__ );
 
 		foreach ( $methods as $method ) {
-			if ( strpos( $method, 'render_' ) !== FALSE ) {
+			if ( strpos( $method, 'render_' ) !== false ) {
 				self::$views[] = str_replace( 'render_', '', $method );
 			}
 		}
@@ -67,12 +68,12 @@ class Kanban_Shortcodes
 
 
 
-	static function shortcode_parser( $atts = array() ) {
+	static function shortcode_parser( $atts = array(), $content ) {
 
 		$view = 'board';
 
 		// View is passed as val with int key e.g. [kanban board]
-		if ( is_array($atts) ) {
+		if ( is_array( $atts ) ) {
 			foreach ( $atts as $key => $val ) {
 
 				// If the key is 0, 1, etc.
@@ -90,21 +91,21 @@ class Kanban_Shortcodes
 		// Determine which method to use.
 		$func = 'render_' . $view;
 
-		if ( !method_exists( __CLASS__, $func ) ) {
+		if ( ! method_exists( __CLASS__, $func ) ) {
 			return;
 		}
 
-		self::$func( $atts );
+		self::$func( $atts, $content );
 	}
 
 
 
-	static function render_list_order_by_user( $atts ) {
+	static function render_list_order_by_user( $atts, $content ) {
 	}
 
 
 
-	static function render_list_order_by_board( $atts ) {
+	static function render_list_order_by_board( $atts, $content ) {
 
 
 		// Get all tasks.
@@ -113,7 +114,7 @@ class Kanban_Shortcodes
 
 
 		// Get all boards, by id.
-		$boards = Kanban_Board::get_all();
+		$boards          = Kanban_Board::get_all();
 		$boards_in_order = Kanban_Utils::order_array_of_objects_by_property( $boards, 'position', 'int' );
 
 
@@ -129,36 +130,36 @@ class Kanban_Shortcodes
 		foreach ( $tasks as $task ) {
 
 			// Filter our tasks
-			if ( !is_null( $atts[ 'user' ] ) && $task->user_id_assigned != $atts[ 'user' ] ) {
+			if ( ! is_null( $atts[ 'user' ] ) && $task->user_id_assigned != $atts[ 'user' ] ) {
 				continue;
 			}
 
-			if ( !is_null( $atts[ 'board' ] ) && $task->board_id != $atts[ 'board' ] ) {
+			if ( ! is_null( $atts[ 'board' ] ) && $task->board_id != $atts[ 'board' ] ) {
 				continue;
 			}
 
-			if ( !is_null( $atts[ 'status' ] ) && $task->status_id != $atts[ 'status' ] ) {
+			if ( ! is_null( $atts[ 'status' ] ) && $task->status_id != $atts[ 'status' ] ) {
 				continue;
 			}
 
-			if ( !is_null( $atts[ 'project' ] ) && $task->project_id != $atts[ 'project' ] ) {
+			if ( ! is_null( $atts[ 'project' ] ) && $task->project_id != $atts[ 'project' ] ) {
 				continue;
 			}
 
 
 
 			// If board doesn't exist, skip it.
-			if ( !isset( $boards[ $task->board_id ] ) ) {
+			if ( ! isset( $boards[ $task->board_id ] ) ) {
 				continue;
 			}
 
 			// If status doesn't exist, skip it.
-			if ( !isset( $boards[ $task->board_id ]->statuses[ $task->status_id ] ) ) {
+			if ( ! isset( $boards[ $task->board_id ]->statuses[ $task->status_id ] ) ) {
 				continue;
 			}
 
 			// Add the array of tasks.
-			if ( !isset( $boards[ $task->board_id ]->statuses[ $task->status_id ]->tasks ) ) {
+			if ( ! isset( $boards[ $task->board_id ]->statuses[ $task->status_id ]->tasks ) ) {
 				$boards[ $task->board_id ]->statuses[ $task->status_id ]->tasks = array();
 			}
 
@@ -166,18 +167,18 @@ class Kanban_Shortcodes
 			$boards[ $task->board_id ]->statuses[ $task->status_id ]->tasks[] = $task;
 
 			// Add a task count to each board.
-			if ( !isset( $boards[ $task->board_id ]->task_count ) ) {
+			if ( ! isset( $boards[ $task->board_id ]->task_count ) ) {
 				$boards[ $task->board_id ]->task_count = 0;
 			}
 
 			// Count the task.
-			$boards[ $task->board_id ]->task_count++;
+			$boards[ $task->board_id ]->task_count ++;
 
-			if ( !isset( $boards[ $task->board_id ]->statuses[ $task->status_id ]->task_count ) ) {
+			if ( ! isset( $boards[ $task->board_id ]->statuses[ $task->status_id ]->task_count ) ) {
 				$boards[ $task->board_id ]->statuses[ $task->status_id ]->task_count = 0;
 			}
 
-			$boards[ $task->board_id ]->statuses[ $task->status_id ]->task_count++;
+			$boards[ $task->board_id ]->statuses[ $task->status_id ]->task_count ++;
 
 		}
 
@@ -193,14 +194,14 @@ class Kanban_Shortcodes
 
 
 
-	static function render_list( $atts ) {
+	static function render_list( $atts, $content ) {
 
 		$defaults = array(
-			'user' => NULL,
-			'board' => NULL,
-			'status' => NULL,
-			'project' => NULL,
-			'order' => 'board'
+			'user'    => null,
+			'board'   => null,
+			'status'  => null,
+			'project' => null,
+			'order'   => 'board'
 		);
 
 		$atts = shortcode_atts( $defaults, $atts );
@@ -209,21 +210,21 @@ class Kanban_Shortcodes
 
 		$func = 'render_list_order_by_' . $atts[ 'order' ];
 
-		if ( !method_exists( __CLASS__, $func ) ) {
+		if ( ! method_exists( __CLASS__, $func ) ) {
 			return;
 		}
 
-		self::$func( $atts );
+		self::$func( $atts, $content );
 	}
 
 
 
-	static function render_board( $atts ) {
+	static function render_board( $atts, $content ) {
 
 		$defaults = array(
-			'id' => NULL,
-			'css' => NULL,
-			'width' => '100%',
+			'id'     => null,
+			'css'    => null,
+			'width'  => '100%',
 			'height' => '400px'
 		);
 
@@ -231,14 +232,14 @@ class Kanban_Shortcodes
 
 
 
-		$url = Kanban_Template::get_uri();
+		$atts[ 'url' ] = Kanban_Template::get_uri();
 
-		if ( !is_null( $atts[ 'id' ] ) ) {
-			$url = add_query_arg(
+		if ( ! is_null( $atts[ 'id' ] ) ) {
+			$atts[ 'url' ] = add_query_arg(
 				array(
 					'board_id' => $atts[ 'id' ]
 				),
-				$url
+				$atts[ 'url' ]
 			);
 		}
 
@@ -249,8 +250,82 @@ class Kanban_Shortcodes
 
 
 
+	static function render_uri( $atts, $content ) {
+
+		$defaults = array(
+			'id' => null
+		);
+
+		$atts = shortcode_atts( $defaults, $atts );
+
+
+
+		$atts[ 'url' ] = Kanban_Template::get_uri();
+
+		if ( ! is_null( $atts[ 'id' ] ) ) {
+			$atts[ 'url' ] = add_query_arg(
+				array(
+					'board_id' => $atts[ 'id' ]
+				),
+				$atts[ 'url' ]
+			);
+		}
+
+
+
+		echo $atts[ 'url' ];
+	}
+
+
+
+	static function render_link( $atts, $content ) {
+
+		$defaults = array(
+			'id'         => null,
+			'class'      => null,
+			'target'     => null,
+			'attributes' => array()
+		);
+
+		$atts = shortcode_atts( $defaults, $atts );
+
+
+
+		$atts[ 'url' ] = Kanban_Template::get_uri();
+
+		if ( ! is_null( $atts[ 'id' ] ) ) {
+			$atts[ 'url' ] = add_query_arg(
+				array(
+					'board_id' => $atts[ 'id' ]
+				),
+				$atts[ 'url' ]
+			);
+		}
+
+
+
+		// Build attributes.
+		$attributes = array();
+
+		if ( ! empty( $atts[ 'class' ] ) ) {
+			$attributes[] = sprintf( 'class="%s"', esc_html( $atts[ 'class' ] ) );
+		}
+
+		if ( ! empty( $atts[ 'target' ] ) ) {
+			$attributes[] = sprintf( 'target="%s"', esc_html( $atts[ 'target' ] ) );
+		}
+
+		$atts[ 'attributes' ] = implode( ' ', $attributes );
+
+
+
+		include plugin_dir_path( __FILE__ ) . '/templates/board-link.php';
+	}
+
+
+
 	static function check_for_core() {
-		if ( !self::_is_parent_loaded() ) {
+		if ( ! self::_is_parent_loaded() ) {
 			deactivate_plugins( plugin_basename( __FILE__ ) );
 
 			wp_die(
@@ -262,7 +337,7 @@ class Kanban_Shortcodes
 					'kanban'
 				),
 				__( 'Error', 'kanban' ),
-				array( 'back_link' => TRUE )
+				array( 'back_link' => true )
 			);
 		}
 	}

@@ -1,4 +1,4 @@
-<iframe class="kanban-iframe" src="<?php echo $url ?>"></iframe>
+<iframe class="kanban-iframe" src="<?php echo $atts[ 'url' ] ?>"></iframe>
 
 <style>
 	<?php if ( $atts['css'] ) : ?>
@@ -9,5 +9,6 @@
 		height: <?php echo $atts['height'] ?>;
 		width: <?php echo $atts['width'] ?>;
 	}
+
 	<?php endif ?>
 </style>
