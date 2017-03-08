@@ -5,9 +5,9 @@ Plugin Name:		Kanban: Shortcodes
 Plugin URI:			https://kanbanwp.com/addons/shortcodes/
 Description:		Embed your Kanban board on another page, or display a filtered to-do list.
 Requires at least:	4.0
-Tested up to:		4.7.0
-Version:			0.0.3
-Release Date:		December 7, 2018
+Tested up to:		4.7.3
+Version:			0.0.4
+Release Date:		March 7, 2017
 Author:				Gelform Inc
 Author URI:			http://gelwp.com
 License:			GPLv2 or later
@@ -46,10 +46,8 @@ class Kanban_Shortcodes {
 
 
 	static function init() {
-
-		register_activation_hook( __FILE__, array( __CLASS__, 'check_for_core' ) );
-
-		add_action( 'admin_init', array( __CLASS__, 'check_for_core' ) );
+		$is_core = self::check_for_core();
+		if ( !$is_core ) return false;
 
 
 
@@ -324,61 +322,59 @@ class Kanban_Shortcodes {
 
 
 
+
 	static function check_for_core() {
-		if ( ! self::_is_parent_loaded() ) {
-			deactivate_plugins( plugin_basename( __FILE__ ) );
-
-			wp_die(
-				__(
-					'<p>
-						Whoops! This plugin requires the Kanban for WordPress plugin.
-	            		Please download it here: <a href="https://wordpress.org/plugins/kanban/" target="_blank">https://wordpress.org/plugins/kanban/</a>.</p>
-	            	<p>',
-					'kanban'
-				),
-				__( 'Error', 'kanban' ),
-				array( 'back_link' => true )
-			);
-		}
-	}
-
-
-
-	static function _is_parent_loaded() {
-		return class_exists( 'Kanban' );
-	}
-
-
-
-	static function _is_parent_activated() {
-		$active_plugins_basenames = get_option( 'active_plugins' );
-		foreach ( $active_plugins_basenames as $plugin_basename ) {
-			if ( false !== strpos( $plugin_basename, '/kanban.php' ) ) {
-				return true;
-			}
+		if ( class_exists( 'Kanban' ) ) {
+			return TRUE;
 		}
 
-		return false;
+		if ( ! function_exists( 'is_plugin_active_for_network' ) ) {
+			require_once( ABSPATH . '/wp-admin/includes/plugin.php' );
+		}
+
+		if ( is_plugin_active_for_network( self::$plugin_basename ) ) {
+			add_action( 'network_admin_notices',  array( __CLASS__, 'admin_deactivate_notice' ) );
+		}
+		else {
+			add_action( 'admin_notices', array( __CLASS__, 'admin_deactivate_notice' ) );
+		}
+
+
+
+		deactivate_plugins( self::$plugin_basename );
+
+		return FALSE;
 	}
 
 
+
+	static function admin_deactivate_notice() {
+		if ( !is_admin() ) {
+			return;
+		}
+		?>
+		<div class="error below-h2">
+			<p>
+				<?php
+				echo sprintf(
+					__('Whoops! This plugin %s requires the <a href="https://wordpress.org/plugins/kanban/" target="_blank">Kanban for WordPress</a> plugin.
+	            		Please make sure it\'s installed and activated.'
+					),
+					self::$friendlyname
+				);
+				?>
+			</p>
+		</div>
+		<?php
+	}
 }
 
 
 
-function kanban_shortcodes_addon() {
+function Kanban_Shortcodes() {
 	Kanban_Shortcodes::init();
 }
 
 
 
-if ( Kanban_Shortcodes::_is_parent_loaded() ) {
-	// If parent plugin already included, init add-on.
-	kanban_shortcodes_addon();
-} else if ( Kanban_Shortcodes::_is_parent_activated() ) {
-	// Init add-on only after the parent plugins is loaded.
-	add_action( 'kanban_loaded', 'kanban_shortcodes_addon' );
-} else {
-	// Even though the parent plugin is not activated, execute add-on for activation / uninstall hooks.
-	kanban_shortcodes_addon();
-}
+add_action( 'plugins_loaded', 'Kanban_Shortcodes', 20, 0 );
