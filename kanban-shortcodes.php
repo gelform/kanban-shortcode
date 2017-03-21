@@ -6,8 +6,8 @@ Plugin URI:			https://kanbanwp.com/addons/shortcodes/
 Description:		Embed your Kanban board on another page, or display a filtered to-do list.
 Requires at least:	4.0
 Tested up to:		4.7.3
-Version:			0.0.4
-Release Date:		March 7, 2017
+Version:			0.0.5
+Release Date:		March 21, 2017
 Author:				Gelform Inc
 Author URI:			http://gelwp.com
 License:			GPLv2 or later
@@ -41,11 +41,32 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 
 class Kanban_Shortcodes {
+	static $slug = '';
+	static $friendlyname = '';
+	static $plugin_basename = '';
+	static $plugin_data;
+
+
+
 	static $views = array();
 
 
 
 	static function init() {
+		self::$slug = basename( __FILE__, '.php' );
+		self::$plugin_basename = plugin_basename( __FILE__ );
+		self::$friendlyname = trim( str_replace( array( 'Kanban', '_' ), ' ', __CLASS__ ) );
+
+
+
+		if ( !function_exists( 'get_plugin_data' ) ) {
+			require_once( ABSPATH . 'wp-admin/includes/plugin.php' );
+		}
+
+		self::$plugin_data = get_plugin_data( __FILE__ );
+
+
+
 		$is_core = self::check_for_core();
 		if ( !$is_core ) return false;
 
