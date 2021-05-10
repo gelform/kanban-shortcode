@@ -1,15 +1,15 @@
 <?php
 /*
-Contributors:		gelform
+Contributors:		gelform, kkoppenhaver
 Plugin Name:		Kanban: Shortcodes
-Plugin URI:			https://kanbanwp.com/addons/shortcodes/
+Plugin URI:			https://kanbanwp.com/
 Description:		Embed your Kanban board on another page, or display a filtered to-do list.
 Requires at least:	4.0
-Tested up to:		4.7.3
-Version:			0.0.5
+Tested up to:		4.9
+Version:			0.0.6
 Release Date:		March 21, 2017
-Author:				Gelform Inc
-Author URI:			http://gelwp.com
+Author:				Kanban for WordPress
+Author URI:			https://kanbanwp.com/
 License:			GPLv2 or later
 License URI:		http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain:		kanban-shortcodes
