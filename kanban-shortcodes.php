@@ -114,7 +114,7 @@ class Kanban_Shortcodes {
 			return;
 		}
 
-		self::$func( $atts, $content );
+		return self::$func( $atts, $content );
 	}
 
 
@@ -202,8 +202,9 @@ class Kanban_Shortcodes {
 		}
 
 
-
-		include plugin_dir_path( __FILE__ ) . '/templates/list-board.php';
+		ob_start();
+		echo require_once( plugin_dir_path( __FILE__ ) . '/templates/list-board.php' );
+		return ob_get_clean();
 	}
 
 
@@ -233,7 +234,7 @@ class Kanban_Shortcodes {
 			return;
 		}
 
-		self::$func( $atts, $content );
+		return self::$func( $atts, $content );
 	}
 
 
@@ -262,9 +263,9 @@ class Kanban_Shortcodes {
 			);
 		}
 
-
-
-		include plugin_dir_path( __FILE__ ) . '/templates/board-iframe.php';
+		ob_start();
+		echo require_once( plugin_dir_path( __FILE__ ) . '/templates/board-iframe.php' );
+		return ob_get_clean();
 	}
 
 
@@ -336,9 +337,9 @@ class Kanban_Shortcodes {
 
 		$atts[ 'attributes' ] = implode( ' ', $attributes );
 
-
-
-		include plugin_dir_path( __FILE__ ) . '/templates/board-link.php';
+		ob_start();
+		echo require_once( plugin_dir_path( __FILE__ ) . '/templates/board-link.php' );
+		return ob_get_clean();
 	}
 
 
